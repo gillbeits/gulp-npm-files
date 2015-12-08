@@ -8,7 +8,16 @@ module.exports = function(devDependencies, packageJsonFilePath) {
   keys = [];
   
   for (key in packages.dependencies) {
-    keys.push('./node_modules/' + key + '/**/*');
+    if (packages.overrides[key] && packages.overrides[key].main) {
+      if (typeof packages.overrides[key].main == "string") {
+        packages.overrides[key].main = [packages.overrides[key].main];
+      }
+      for (main in packages.overrides[key].main) {
+        keys.push('./node_modules/' + key + '/' + packages.overrides[key].main[main]);
+      }
+    } else {
+      keys.push('./node_modules/' + key + '/**/*');
+    }
   }
 
   if (devDependencies) {
